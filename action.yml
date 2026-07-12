@@ -1,7 +1,7 @@
-name: 'Gravity Push'
+name: 'snakeNet Gravity Push'
 description: >-
-  Authenticate against snakeNet ID (Authentik) as an M2M client, self-provision the client against
-  Gravity, and send a Web Push notification to a Gravity Topic.
+  Authenticate as an M2M client, self-provision against Gravity, and send a Web Push notification
+  to a Topic.
 author: 'snakenet.org'
 
 branding:

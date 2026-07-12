@@ -43,11 +43,6 @@ side of this contract (or `/docs` on a running instance for the full OpenAPI spe
 | `push_message_url`     | no       | `''`                            | URL opened when the notification is clicked.                                           |
 | `device_identity`      | no       | `github-actions:<repo>/<workflow>` | Device identity recorded on the Bot account for this M2M client.                  |
 
-`push_topic_id` isn't in the original parameter list this action was speced from — Gravity's
-`/api/v1/push/send` always targets one Topic, and Gravity has no "default" Topic concept, so it's a
-required input here. `m2m_grant_type` (`client_credentials`) and `m2m_scope`
-(`openid profile groups`) aren't configurable inputs — they're hardcoded in `index.js`.
-
 ## Outputs
 
 `subscribers`, `sent`, `failed`, `pruned` — the tally `POST /api/v1/push/send` returns.
