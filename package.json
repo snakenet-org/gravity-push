@@ -1,0 +1,25 @@
+{
+  "name": "gravity-push",
+  "version": "1.0.0",
+  "description": "A custom action to authenticate against snakeNet ID as an M2M client, self-provision against Gravity, and send a Web Push notification via the Gravity REST API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "snakeNet",
+    "Gravity",
+    "Web Push",
+    "M2M",
+    "CI/CD"
+  ],
+  "author": "Marc Fiedler <dev@snakenet.org>",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@actions/core": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.44.1"
+  }
+}

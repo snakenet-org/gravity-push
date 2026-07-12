@@ -13,10 +13,6 @@ inputs:
     description: >-
       snakeNet ID (Authentik) OAuth2 token endpoint, e.g. https://id.snakenet.io/application/o/token/
     required: true
-  m2m_grant_type:
-    description: 'OAuth2 grant_type sent to the identity provider.'
-    required: false
-    default: 'client_credentials'
   m2m_client_id:
     description: 'M2M client id registered in Authentik.'
     required: true
@@ -26,12 +22,6 @@ inputs:
   m2m_password:
     description: 'M2M service-account password. Treat as a secret.'
     required: true
-  m2m_scope:
-    description: >-
-      OAuth2 scope requested from the identity provider. Must include "groups" so Gravity can
-      resolve this client's entitlements (it needs the gravity-push-user group, or admin, to send).
-    required: false
-    default: 'openid profile groups'
   push_service_url:
     description: 'Base URL of the Gravity instance, e.g. https://snakenet.org/'
     required: true
@@ -63,34 +53,13 @@ inputs:
 outputs:
   subscribers:
     description: 'Number of Topic subscribers targeted.'
-    value: ${{ steps.send.outputs.subscribers }}
   sent:
     description: 'Number of notifications successfully delivered.'
-    value: ${{ steps.send.outputs.sent }}
   failed:
     description: 'Number of notifications that failed to deliver.'
-    value: ${{ steps.send.outputs.failed }}
   pruned:
     description: 'Number of dead subscriptions pruned during this send.'
-    value: ${{ steps.send.outputs.pruned }}
 
 runs:
-  using: 'composite'
-  steps:
-    - id: send
-      shell: bash
-      env:
-        IDENTITY_PROVIDER_URL: ${{ inputs.identity_provider_url }}
-        M2M_GRANT_TYPE: ${{ inputs.m2m_grant_type }}
-        M2M_CLIENT_ID: ${{ inputs.m2m_client_id }}
-        M2M_USERNAME: ${{ inputs.m2m_username }}
-        M2M_PASSWORD: ${{ inputs.m2m_password }}
-        M2M_SCOPE: ${{ inputs.m2m_scope }}
-        PUSH_SERVICE_URL: ${{ inputs.push_service_url }}
-        PUSH_SERVICE_TOKEN: ${{ inputs.push_service_token }}
-        PUSH_TOPIC_ID: ${{ inputs.push_topic_id }}
-        PUSH_MESSAGE_TITLE: ${{ inputs.push_message_title }}
-        PUSH_MESSAGE_BODY: ${{ inputs.push_message_body }}
-        PUSH_MESSAGE_URL: ${{ inputs.push_message_url }}
-        DEVICE_IDENTITY: ${{ inputs.device_identity || format('github-actions:{0}/{1}', github.repository, github.workflow) }}
-      run: bash "${GITHUB_ACTION_PATH}/scripts/send-push.sh"
+  using: 'node20'
+  main: 'dist/index.js'
