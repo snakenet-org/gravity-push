@@ -61,5 +61,5 @@ outputs:
     description: 'Number of dead subscriptions pruned during this send.'
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'

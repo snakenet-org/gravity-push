@@ -81,8 +81,9 @@ reusable action other repos `uses:`, not one that runs itself.
 
 ## Development
 
-This is a JavaScript action (`runs.using: node20`), matching `snakenet-org/satellite-deploy`'s
-structure: `index.js` holds the source (using `@actions/core` + the platform `fetch`), bundled to
-the committed `dist/index.js` via `build.sh` (`npm install && npx ncc build index.js -o dist`) —
+This is a JavaScript action (`runs.using: node24` — the current Node.js LTS supported by GitHub
+Actions runners; `node20` is deprecated), matching `snakenet-org/satellite-deploy`'s structure:
+`index.js` holds the source (using `@actions/core` + the platform `fetch`), bundled to the
+committed `dist/index.js` via `build.sh` (`npm install && npx ncc build index.js -o dist`) —
 `dist/` must stay committed since that's the file `action.yml` actually points `runs.main` at.
 Run `bash build.sh` after any change to `index.js` and commit the resulting `dist/`.
