@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+# DO NOT ignore dist/ - GitHub needs this folder to run your action!
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment variables
+.env
+.env.local
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
