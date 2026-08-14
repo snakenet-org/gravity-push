@@ -23,15 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Authenticate, provision, and send
+      - name: Send push notification
         uses: ./
         with:
-          identity_provider_url: ${{ secrets.IDENTITY_PROVIDER_URL }}
-          m2m_client_id: ${{ secrets.M2M_CLIENT_ID }}
-          m2m_username: ${{ secrets.M2M_USERNAME }}
-          m2m_password: ${{ secrets.M2M_PASSWORD }}
           push_service_url: ${{ secrets.PUSH_SERVICE_URL }}
-          push_service_token: ${{ secrets.PUSH_SERVICE_TOKEN }}
+          api_key: ${{ secrets.GRAVITY_API_KEY }}
+          gravity_token: ${{ secrets.GRAVITY_OPHION_TOKEN }}
           push_topic_id: ${{ inputs.push_topic_id }}
           push_message_title: ${{ inputs.push_message_title }}
           push_message_body: ${{ inputs.push_message_body }}

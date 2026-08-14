@@ -1,7 +1,5 @@
 name: 'snakeNet Gravity Push'
-description: >-
-  Authenticate as an M2M client, self-provision against Gravity, and send a Web Push notification
-  to a Topic.
+description: 'Send a Web Push notification to a Gravity Topic, authenticated by a Gravity API key.'
 author: 'snakenet.org'
 
 branding:
@@ -9,29 +7,22 @@ branding:
   color: 'blue'
 
 inputs:
-  identity_provider_url:
-    description: >-
-      snakeNet ID (Authentik) OAuth2 token endpoint, e.g. https://id.snakenet.io/application/o/token/
-    required: true
-  m2m_client_id:
-    description: 'M2M client id registered in Authentik.'
-    required: true
-  m2m_username:
-    description: 'M2M service-account username.'
-    required: true
-  m2m_password:
-    description: 'M2M service-account password. Treat as a secret.'
-    required: true
   push_service_url:
     description: 'Base URL of the Gravity instance, e.g. https://snakenet.org/'
     required: true
-  push_service_token:
-    description: 'Gravity shared service secret, sent as X-Ophion-Token. Treat as a secret.'
+  api_key:
+    description: >-
+      Gravity API key carrying the "Can Notify via Push" entitlement, sent as X-Api-Key. Create
+      one from Gravity's /api-keys page. Treat as a secret.
+    required: true
+  gravity_token:
+    description: >-
+      Gravity's shared service secret, sent as X-Ophion-Token. Treat as a secret.
     required: true
   push_topic_id:
     description: >-
-      UUID of the Gravity Topic to notify. List available Topics with
-      GET /api/v1/push/topics (Ophion + JWT gated).
+      UUID of the Gravity Topic to notify. Find available Topics on Gravity's /topics management
+      page.
     required: true
   push_message_title:
     description: 'Push notification title.'
@@ -41,12 +32,6 @@ inputs:
     required: true
   push_message_url:
     description: 'URL opened when the notification is clicked. Optional.'
-    required: false
-    default: ''
-  device_identity:
-    description: >-
-      Identity recorded for this M2M device on the Gravity Bot account. Defaults to
-      "github-actions:<repository>/<workflow>".
     required: false
     default: ''
 

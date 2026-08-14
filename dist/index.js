@@ -28105,9 +28105,8 @@ module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 /******/ }
 /******/ 
 /************************************************************************/
-/******/ /* webpack/runtime/compat */
-/******/ 
-/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ /* webpack/runtime/asset-relocator-loader */
+/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = decodeURIComponent(new URL('.', import.meta.url).pathname).slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
 /******/ 
 /************************************************************************/
 var __webpack_exports__ = {};
@@ -31060,43 +31059,15 @@ function getIDToken(aud) {
 ;// CONCATENATED MODULE: ./index.js
 
 
-// Fixed, not configurable — see README.
-const M2M_GRANT_TYPE = 'client_credentials';
-const M2M_SCOPE = 'openid profile groups';
-
-function defaultDeviceIdentity() {
-  const repo = process.env.GITHUB_REPOSITORY ?? 'unknown/unknown';
-  const workflow = process.env.GITHUB_WORKFLOW ?? 'unknown';
-  return `github-actions:${repo}/${workflow}`;
-}
-
-async function authenticate(identityProviderUrl, clientId, username, password) {
-  const response = await fetch(identityProviderUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: M2M_GRANT_TYPE,
-      client_id: clientId,
-      username,
-      password,
-      scope: M2M_SCOPE,
-    }),
-  });
-  const text = await response.text();
-  if (!response.ok) {
-    throw new Error(`POST ${identityProviderUrl} failed with HTTP ${response.status}: ${text}`);
-  }
-  const data = text ? JSON.parse(text) : {};
-  if (!data.access_token) {
-    throw new Error('Identity provider response did not contain an access_token');
-  }
-  return data.access_token;
-}
-
-async function postJson(url, headers, body) {
+async function sendNotification(baseUrl, apiKey, gravityToken, body) {
+  const url = new URL('/api/v1/notify/send', baseUrl);
   const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+      'X-Ophion-Token': gravityToken,
+    },
     body: JSON.stringify(body),
   });
   const text = await response.text();
@@ -31109,51 +31080,18 @@ async function postJson(url, headers, body) {
 async function run() {
   try {
     // 1. Get input values from the workflow
-    const identityProviderUrl = getInput('identity_provider_url', { required: true });
-    const m2mClientId = getInput('m2m_client_id', { required: true });
-    const m2mUsername = getInput('m2m_username', { required: true });
-    const m2mPassword = getInput('m2m_password', { required: true });
     const pushServiceUrl = getInput('push_service_url', { required: true });
-    const pushServiceToken = getInput('push_service_token', { required: true });
+    const apiKey = getInput('api_key', { required: true });
+    const gravityToken = getInput('gravity_token', { required: true });
     const pushTopicId = getInput('push_topic_id', { required: true });
     const pushMessageTitle = getInput('push_message_title', { required: true });
     const pushMessageBody = getInput('push_message_body', { required: true });
     const pushMessageUrl = getInput('push_message_url');
-    const deviceIdentity = getInput('device_identity') || defaultDeviceIdentity();
 
-    core_setSecret(m2mPassword);
-    core_setSecret(pushServiceToken);
+    core_setSecret(apiKey);
+    core_setSecret(gravityToken);
 
-    const baseUrl = pushServiceUrl.replace(/\/+$/, '');
-
-    // 2. Authenticate against snakeNet ID
-    startGroup('Authenticate against snakeNet ID');
-    const accessToken = await authenticate(identityProviderUrl, m2mClientId, m2mUsername, m2mPassword);
-    core_setSecret(accessToken);
-    console.log('Obtained access token.');
-    endGroup();
-
-    const authHeaders = {
-      'X-Ophion-Token': pushServiceToken,
-      Authorization: `Bearer ${accessToken}`,
-    };
-
-    // 3. Self-provision this M2M client against Gravity
-    startGroup('Provision against Gravity');
-    const provisionResult = await postJson(`${baseUrl}/api/v1/auth/m2m/provision`, authHeaders, {
-      device_identity: deviceIdentity,
-    });
-    console.log('Provision response:', JSON.stringify({
-      message: provisionResult.message,
-      id: provisionResult.id,
-      created: provisionResult.created,
-      device_added: provisionResult.device_added,
-      entitlements: provisionResult.entitlements,
-      is_admin: provisionResult.is_admin,
-    }));
-    endGroup();
-
-    // 4. Send the push notification
+    // 2. Send the push notification
     startGroup('Send push notification');
     const sendBody = {
       topic_id: pushTopicId,
@@ -31163,11 +31101,11 @@ async function run() {
     if (pushMessageUrl) {
       sendBody.url = pushMessageUrl;
     }
-    const sendResult = await postJson(`${baseUrl}/api/v1/push/send`, authHeaders, sendBody);
+    const sendResult = await sendNotification(pushServiceUrl, apiKey, gravityToken, sendBody);
     console.log('Send response:', JSON.stringify(sendResult));
     endGroup();
 
-    // 5. Set the output variables
+    // 3. Set the output variables
     setOutput('subscribers', sendResult.subscribers);
     setOutput('sent', sendResult.sent);
     setOutput('failed', sendResult.failed);
