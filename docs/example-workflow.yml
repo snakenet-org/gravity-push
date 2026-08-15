@@ -1,10 +1,10 @@
-name: Send Gravity Push Notification
+name: Send Pulsar Push Notification
 
 on:
   workflow_dispatch:
     inputs:
       push_topic_id:
-        description: 'UUID of the Gravity Topic to notify'
+        description: 'UUID of the Pulsar Topic to notify'
         required: true
       push_message_title:
         description: 'Notification title'
@@ -27,8 +27,8 @@ jobs:
         uses: ./
         with:
           push_service_url: ${{ secrets.PUSH_SERVICE_URL }}
-          api_key: ${{ secrets.GRAVITY_API_KEY }}
-          gravity_token: ${{ secrets.GRAVITY_OPHION_TOKEN }}
+          push_service_access_key: ${{ secrets.PULSAR_ACCESS_KEY }}
+          push_service_token: ${{ secrets.PULSAR_TOKEN }}
           push_topic_id: ${{ inputs.push_topic_id }}
           push_message_title: ${{ inputs.push_message_title }}
           push_message_body: ${{ inputs.push_message_body }}

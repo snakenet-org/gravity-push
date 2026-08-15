@@ -1,5 +1,5 @@
 name: 'snakeNet Pulsar Push'
-description: 'Send a Web Push notification to a Pulsar Topic, authenticated by a Pulsar API key.'
+description: 'Send a Web Push notification to a Pulsar Topic, authenticated by a Pulsar Access Key.'
 author: 'snakenet.org'
 
 branding:
@@ -10,18 +10,19 @@ inputs:
   push_service_url:
     description: 'Base URL of the Pulsar instance, e.g. https://snakenet.org/'
     required: true
-  push_service_api_key:
+  push_service_access_key:
     description: >-
-      Pulsar API key carrying the "Can Notify via Push" entitlement, sent as X-Api-Key. Create
-      one from Pulsar's /api-keys page. Treat as a secret.
+      Pulsar Access Key, sent as X-Pulsar-Access-Key. Created by an admin from Pulsar's
+      /access-keys page and must stay enabled. Treat as a secret.
     required: true
   push_service_token:
     description: >-
-      Pulsar's shared service secret, sent as X-Ophion-Token. Treat as a secret.
+      Pulsar's shared service secret, sent as X-Pulsar-Token (env PULSAR_TOKEN on the Pulsar
+      side). Treat as a secret.
     required: true
   push_topic_id:
     description: >-
-      UUID of the Pulsar Topic to notify. Find available Topics on Pulsar's /topics management
+      UUID of the Pulsar Topic to notify. Find existing Topics on Pulsar's /topics management
       page.
     required: true
   push_message_title:

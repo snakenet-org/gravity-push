@@ -1,16 +1,16 @@
 {
-  "name": "gravity-push",
+  "name": "pulsar-push",
   "version": "1.3.0",
-  "description": "A custom action to send a Web Push notification to a Gravity Topic via the Gravity REST API, authenticated by an API key",
+  "description": "A custom action to send a Web Push notification to a Pulsar Topic via the Pulsar REST API, authenticated by an Access Key",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "snakeNet",
-    "Gravity",
+    "Pulsar",
     "Web Push",
-    "API key",
+    "Access Key",
     "CI/CD"
   ],
   "author": "Marc Fiedler <dev@snakenet.org>",

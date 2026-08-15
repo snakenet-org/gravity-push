@@ -1,38 +1,37 @@
-# gravity-push
+# pulsar-push
 
 A GitHub Action that sends a Web Push notification to a
-[Gravity](https://github.com/snakenet-org/gravity) Topic — one `POST`, authenticated by a Gravity
-API key:
+[Pulsar](https://github.com/snakenet-org/pulsar) Topic — one `POST`, authenticated by a Pulsar
+Access Key:
 
-1. **Send** — `POST /api/v1/notify/send` on the Gravity instance, with the API key sent as
-   `X-Api-Key` and the shared service secret sent as `X-Ophion-Token`, broadcasting a push
-   notification to every subscriber of the given Gravity Topic.
+1. **Send** — `POST /api/v1/notify/send` on the Pulsar instance, with the Access Key sent as
+   `X-Pulsar-Access-Key` and the shared service secret sent as `X-Pulsar-Token`, broadcasting a
+   push notification to every subscriber of the given Pulsar Topic.
 
-See `gravity/src/gravity/api/v1/notify.py` for the Gravity side of this contract (or `/docs` on a
+See `pulsar/src/pulsar/api/v1/notify.py` for the Pulsar side of this contract (or `/docs` on a
 running instance for the full OpenAPI spec).
 
 ## Prerequisites
 
-- A Gravity API key with the "Can Notify via Push" entitlement, created from a logged-in user's
-  self-service `/api-keys` page on the Gravity instance. The key must stay `enabled`.
-- Gravity's shared `X-Ophion-Token` service secret (`GRAVITY_OPHION_TOKEN` on the Gravity side).
-- A Gravity Topic to notify — find existing Topics on Gravity's `/topics` management page.
+- A Pulsar Access Key, created by an admin from a logged-in admin's `/access-keys` page on the
+  Pulsar instance. The key must stay `enabled`.
+- Pulsar's shared `X-Pulsar-Token` service secret (`PULSAR_TOKEN` on the Pulsar side).
+- A Pulsar Topic to notify — find existing Topics on Pulsar's `/topics` management page.
 
-Unlike this action's previous version, no Authentik M2M client, service-account credentials, or
-self-provisioning step are needed — the API key plus the shared service secret authenticate the
-call directly, with no OIDC session involved.
+The Access Key plus the shared service secret authenticate the call directly, with no OIDC
+session involved.
 
 ## Inputs
 
-| Input                 | Required | Default | Description                                                            |
-| ---------------------- | -------- | ------- | ------------------------------------------------------------------------ |
-| `push_service_url`     | yes      | —       | Base URL of the Gravity instance.                                        |
-| `api_key`              | yes      | —       | Gravity API key with the "Can Notify via Push" entitlement, sent as `X-Api-Key`. **Secret.** |
-| `gravity_token`        | yes      | —       | Gravity's shared service secret, sent as `X-Ophion-Token`. **Secret.**   |
-| `push_topic_id`        | yes      | —       | UUID of the Gravity Topic to notify.                                     |
-| `push_message_title`   | yes      | —       | Notification title.                                                      |
-| `push_message_body`    | yes      | —       | Notification body.                                                       |
-| `push_message_url`     | no       | `''`    | URL opened when the notification is clicked.                             |
+| Input                      | Required | Default | Description                                                            |
+| --------------------------- | -------- | ------- | ------------------------------------------------------------------------ |
+| `push_service_url`          | yes      | —       | Base URL of the Pulsar instance.                                         |
+| `push_service_access_key`   | yes      | —       | Pulsar Access Key, sent as `X-Pulsar-Access-Key`. **Secret.**            |
+| `push_service_token`        | yes      | —       | Pulsar's shared service secret, sent as `X-Pulsar-Token`. **Secret.**    |
+| `push_topic_id`             | yes      | —       | UUID of the Pulsar Topic to notify.                                      |
+| `push_message_title`        | yes      | —       | Notification title.                                                      |
+| `push_message_body`         | yes      | —       | Notification body.                                                      |
+| `push_message_url`          | no       | `''`    | URL opened when the notification is clicked.                             |
 
 ## Outputs
 
@@ -41,22 +40,23 @@ call directly, with no OIDC session involved.
 ## Usage from another workflow
 
 ```yaml
-- uses: snakenet-org/gravity-push@v1
+- uses: snakenet-org/pulsar-push@v1
   with:
-    push_service_url: https://snakenet.org/
-    api_key: ${{ secrets.GRAVITY_API_KEY }}
-    gravity_token: ${{ secrets.GRAVITY_OPHION_TOKEN }}
+    push_service_url: https://your-domain.com/
+    push_service_access_key: ${{ secrets.PULSAR_ACCESS_KEY }}
+    push_service_token: ${{ secrets.PULSAR_TOKEN }}
     push_topic_id: 8f14e45f-ceea-467e-95a5-9a3d5a1f2b3c
     push_message_title: Hello World
     push_message_body: This is a test!
-    push_message_url: https://snakenet.org/
+    push_message_url: https://your-domain.com/hello-world
 ```
 
-(Every value above is a dummy — replace with your own configuration and store `api_key` and
-`gravity_token` in your repository's Actions secrets, never inline.)
+(Every value above is a dummy — replace with your own configuration and store
+`push_service_access_key` and `push_service_token` in your repository's Actions secrets, never
+inline.)
 
 `docs/example-workflow.yml` is a `workflow_dispatch` example of the block above wired to repo
-secrets (`PUSH_SERVICE_URL`, `GRAVITY_API_KEY`, `GRAVITY_OPHION_TOKEN`) plus prompted per-message
+secrets (`PUSH_SERVICE_URL`, `PULSAR_ACCESS_KEY`, `PULSAR_TOKEN`) plus prompted per-message
 inputs — copy it into a
 consuming repository's `.github/workflows/` to dispatch a push notification by hand. This repo
 itself ships no `.github/workflows` of its own, same as `snakenet-org/satellite-deploy` — it's a

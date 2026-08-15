@@ -1,13 +1,13 @@
 import * as core from '@actions/core';
 
-async function sendNotification(baseUrl, apiKey, pulsarToken, body) {
+async function sendNotification(baseUrl, accessKey, pulsarToken, body) {
   const url = new URL('/api/v1/notify/send', baseUrl);
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Api-Key': apiKey,
-      'X-Ophion-Token': pulsarToken,
+      'X-Pulsar-Access-Key': accessKey,
+      'X-Pulsar-Token': pulsarToken,
     },
     body: JSON.stringify(body),
   });
@@ -22,14 +22,14 @@ async function run() {
   try {
     // 1. Get input values from the workflow
     const pushServiceUrl = core.getInput('push_service_url', { required: true });
-    const apiKey = core.getInput('push_service_api_key', { required: true });
+    const accessKey = core.getInput('push_service_access_key', { required: true });
     const pulsarToken = core.getInput('push_service_token', { required: true });
     const pushTopicId = core.getInput('push_topic_id', { required: true });
     const pushMessageTitle = core.getInput('push_message_title', { required: true });
     const pushMessageBody = core.getInput('push_message_body', { required: true });
     const pushMessageUrl = core.getInput('push_message_url');
 
-    core.setSecret(apiKey);
+    core.setSecret(accessKey);
     core.setSecret(pulsarToken);
 
     // 2. Send the push notification
@@ -42,7 +42,7 @@ async function run() {
     if (pushMessageUrl) {
       sendBody.url = pushMessageUrl;
     }
-    const sendResult = await sendNotification(pushServiceUrl, apiKey, pulsarToken, sendBody);
+    const sendResult = await sendNotification(pushServiceUrl, accessKey, pulsarToken, sendBody);
     console.log('Send response:', JSON.stringify(sendResult));
     core.endGroup();
 

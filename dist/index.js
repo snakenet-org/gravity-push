@@ -31059,14 +31059,14 @@ function getIDToken(aud) {
 ;// CONCATENATED MODULE: ./index.js
 
 
-async function sendNotification(baseUrl, apiKey, gravityToken, body) {
+async function sendNotification(baseUrl, accessKey, pulsarToken, body) {
   const url = new URL('/api/v1/notify/send', baseUrl);
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Api-Key': apiKey,
-      'X-Ophion-Token': gravityToken,
+      'X-Pulsar-Access-Key': accessKey,
+      'X-Pulsar-Token': pulsarToken,
     },
     body: JSON.stringify(body),
   });
@@ -31081,15 +31081,15 @@ async function run() {
   try {
     // 1. Get input values from the workflow
     const pushServiceUrl = getInput('push_service_url', { required: true });
-    const apiKey = getInput('api_key', { required: true });
-    const gravityToken = getInput('gravity_token', { required: true });
+    const accessKey = getInput('push_service_access_key', { required: true });
+    const pulsarToken = getInput('push_service_token', { required: true });
     const pushTopicId = getInput('push_topic_id', { required: true });
     const pushMessageTitle = getInput('push_message_title', { required: true });
     const pushMessageBody = getInput('push_message_body', { required: true });
     const pushMessageUrl = getInput('push_message_url');
 
-    core_setSecret(apiKey);
-    core_setSecret(gravityToken);
+    core_setSecret(accessKey);
+    core_setSecret(pulsarToken);
 
     // 2. Send the push notification
     startGroup('Send push notification');
@@ -31101,7 +31101,7 @@ async function run() {
     if (pushMessageUrl) {
       sendBody.url = pushMessageUrl;
     }
-    const sendResult = await sendNotification(pushServiceUrl, apiKey, gravityToken, sendBody);
+    const sendResult = await sendNotification(pushServiceUrl, accessKey, pulsarToken, sendBody);
     console.log('Send response:', JSON.stringify(sendResult));
     endGroup();
 
@@ -31116,7 +31116,7 @@ async function run() {
     );
   } catch (error) {
     // Fail the GitHub Action step if anything goes wrong
-    setFailed(`Gravity push failed: ${error.message}`);
+    setFailed(`Pulsar push failed: ${error.message}`);
   }
 }
 
