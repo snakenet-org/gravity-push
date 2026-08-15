@@ -1,6 +1,6 @@
 {
   "name": "gravity-push",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "A custom action to send a Web Push notification to a Gravity Topic via the Gravity REST API, authenticated by an API key",
   "main": "index.js",
   "scripts": {

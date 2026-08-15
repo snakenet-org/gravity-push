@@ -1,13 +1,13 @@
 import * as core from '@actions/core';
 
-async function sendNotification(baseUrl, apiKey, gravityToken, body) {
+async function sendNotification(baseUrl, apiKey, pulsarToken, body) {
   const url = new URL('/api/v1/notify/send', baseUrl);
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
-      'X-Ophion-Token': gravityToken,
+      'X-Ophion-Token': pulsarToken,
     },
     body: JSON.stringify(body),
   });
@@ -22,15 +22,15 @@ async function run() {
   try {
     // 1. Get input values from the workflow
     const pushServiceUrl = core.getInput('push_service_url', { required: true });
-    const apiKey = core.getInput('api_key', { required: true });
-    const gravityToken = core.getInput('gravity_token', { required: true });
+    const apiKey = core.getInput('push_service_api_key', { required: true });
+    const pulsarToken = core.getInput('push_service_token', { required: true });
     const pushTopicId = core.getInput('push_topic_id', { required: true });
     const pushMessageTitle = core.getInput('push_message_title', { required: true });
     const pushMessageBody = core.getInput('push_message_body', { required: true });
     const pushMessageUrl = core.getInput('push_message_url');
 
     core.setSecret(apiKey);
-    core.setSecret(gravityToken);
+    core.setSecret(pulsarToken);
 
     // 2. Send the push notification
     core.startGroup('Send push notification');
@@ -42,7 +42,7 @@ async function run() {
     if (pushMessageUrl) {
       sendBody.url = pushMessageUrl;
     }
-    const sendResult = await sendNotification(pushServiceUrl, apiKey, gravityToken, sendBody);
+    const sendResult = await sendNotification(pushServiceUrl, apiKey, pulsarToken, sendBody);
     console.log('Send response:', JSON.stringify(sendResult));
     core.endGroup();
 
@@ -57,7 +57,7 @@ async function run() {
     );
   } catch (error) {
     // Fail the GitHub Action step if anything goes wrong
-    core.setFailed(`Gravity push failed: ${error.message}`);
+    core.setFailed(`Pulsar push failed: ${error.message}`);
   }
 }
 

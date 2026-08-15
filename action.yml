@@ -1,5 +1,5 @@
-name: 'snakeNet Gravity Push'
-description: 'Send a Web Push notification to a Gravity Topic, authenticated by a Gravity API key.'
+name: 'snakeNet Pulsar Push'
+description: 'Send a Web Push notification to a Pulsar Topic, authenticated by a Pulsar API key.'
 author: 'snakenet.org'
 
 branding:
@@ -8,20 +8,20 @@ branding:
 
 inputs:
   push_service_url:
-    description: 'Base URL of the Gravity instance, e.g. https://snakenet.org/'
+    description: 'Base URL of the Pulsar instance, e.g. https://snakenet.org/'
     required: true
-  api_key:
+  push_service_api_key:
     description: >-
-      Gravity API key carrying the "Can Notify via Push" entitlement, sent as X-Api-Key. Create
-      one from Gravity's /api-keys page. Treat as a secret.
+      Pulsar API key carrying the "Can Notify via Push" entitlement, sent as X-Api-Key. Create
+      one from Pulsar's /api-keys page. Treat as a secret.
     required: true
-  gravity_token:
+  push_service_token:
     description: >-
-      Gravity's shared service secret, sent as X-Ophion-Token. Treat as a secret.
+      Pulsar's shared service secret, sent as X-Ophion-Token. Treat as a secret.
     required: true
   push_topic_id:
     description: >-
-      UUID of the Gravity Topic to notify. Find available Topics on Gravity's /topics management
+      UUID of the Pulsar Topic to notify. Find available Topics on Pulsar's /topics management
       page.
     required: true
   push_message_title:
